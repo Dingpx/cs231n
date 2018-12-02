@@ -25,7 +25,12 @@ def affine_forward(x, w, b):
     # TODO: Implement the affine forward pass. Store the result in out. You   #
     # will need to reshape the input into rows.                               #
     ###########################################################################
-    pass
+    #print(type(x.shape))   # x.shape的类型是tuple
+    N = x.shape[0]         # 取tuple类型数组用[]
+    x = x.reshape(N, -1) # (N,D)
+    out = x.dot(w)         # (N,M）
+    out += b                 # (N,M）
+    
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
