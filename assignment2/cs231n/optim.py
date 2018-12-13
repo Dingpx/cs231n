@@ -57,7 +57,9 @@ def sgd_momentum(w, dw, config=None):
     """
     if config is None: config = {}
     config.setdefault('learning_rate', 1e-2)
+    # Python 字典 setdefault() 函数和get() 方法类似, 如果键不存在于字典中，将会添加键并将值设为默认值
     config.setdefault('momentum', 0.9)
+    # Python 字典(Dictionary) get() 函数返回指定键的值，如果值不在字典中返回默认值。
     v = config.get('velocity', np.zeros_like(w))
 
     next_w = None
@@ -65,7 +67,12 @@ def sgd_momentum(w, dw, config=None):
     # TODO: Implement the momentum update formula. Store the updated value in #
     # the next_w variable. You should also use and update the velocity v.     #
     ###########################################################################
-    pass
+    momentum = config.get('momentum')
+    learning_rate = config.get('learning_rate')
+    v = momentum * v - learning_rate * dw
+    w += v
+    next_w = w
+    
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -99,11 +106,18 @@ def rmsprop(w, dw, config=None):
     # in the next_w variable. Don't forget to update cache value stored in    #
     # config['cache'].                                                        #
     ###########################################################################
-    pass
+    learning_rate = config.get('learning_rate')
+    decay_rate = config.get('decay_rate')
+    eps=  config.get('epsilon')
+    cache = config.get('cache')
+    
+    cache = decay_rate * cache + (1 - decay_rate) * dw*dw
+    w += - learning_rate * dw / (np.sqrt(cache+ eps))
+    next_w = w
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
-
+    config['cache'] = cache
     return next_w, config
 
 
@@ -139,9 +153,26 @@ def adam(w, dw, config=None):
     # NOTE: In order to match the reference output, please modify t _before_  #
     # using it in any calculations.                                           #
     ###########################################################################
-    pass
+    learning_rate = config.get('learning_rate')
+    beta1 = config.get('beta1')
+    beta2 = config.get('beta2')
+    eps=  config.get('epsilon')
+    m = config.get('m')
+    v = config.get('v')
+    t = config.get('t')
+    t = 6 ##？？并不知道这里该不该自己换一个参数
+    
+    m = beta1*m + (1-beta1)*dw
+    mt = m / (1-beta1**t)
+    v = beta2*v + (1-beta2)*(dw*dw)
+    vt = v / (1-beta2**t)
+    w += - learning_rate * mt / (np.sqrt(vt + eps))
+    next_w = w
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
-
+    config['v'] = v
+    config['m'] = m
+    
+    
     return next_w, config
